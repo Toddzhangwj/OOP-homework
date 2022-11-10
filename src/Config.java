@@ -1,4 +1,4 @@
-public class Config {
+public interface Config {
     public int X0=20; //棋盘起点坐标x0
     public int Y0=30;  //棋盘起点坐标y0
     public int ROWS=19;  //行数
