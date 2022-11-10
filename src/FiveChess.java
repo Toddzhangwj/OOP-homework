@@ -22,6 +22,8 @@ public class FiveChess extends JPanel{
         eastPanel(frame);			//窗体frame上添加东边面板	 ---功能按钮
 
         frame.setVisible(true);		//设置窗体可见
+
+        cl.setExist(board);			//将棋子数组传入到事件监听类中
     }
 
     public void centerPanel(JFrame frame){
