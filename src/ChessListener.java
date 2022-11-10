@@ -4,6 +4,8 @@ import java.awt.event.MouseAdapter;
 
 public class ChessListener extends MouseAdapter implements ActionListener{
     private FiveChess fiveChess;
+
+
     public ChessListener(FiveChess fiveChess) {
         this.fiveChess = fiveChess;
     }

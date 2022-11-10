@@ -10,6 +10,7 @@ public class FiveChess extends JPanel{
         chess.showUI();
     }
 
+
     public void showUI(){
         JFrame frame=new JFrame();  //创建窗体  frame
         frame.setTitle("五子棋 ");   //设置窗体的标题
@@ -27,6 +28,7 @@ public class FiveChess extends JPanel{
         this.setBackground(Color.ORANGE);
         frame.add(this);
     }
+
 
     public void eastPanel(JFrame frame){
         JPanel epanel=new JPanel();			//创建一个面板对象
@@ -57,5 +59,38 @@ public class FiveChess extends JPanel{
             radioButton.addActionListener(cl);		//加监听器
         }
         frame.add(epanel,BorderLayout.EAST);		//为窗体(边框布局)添加面板---放置在东侧
+    }
+
+    public void paint(Graphics g){
+        super.paint(g);
+        drawChessTable(g);
+        reDrawChess(g);
+    }
+
+    public void drawChessTable(Graphics g){
+        for(int r=0;r<Config.ROWS;r++){    			//行           x 不变    y变
+            g.drawLine(Config.X0, Config.Y0+r*Config.SIZE, Config.X0+(Config.COLUMNS-1)*Config.SIZE, Config.Y0+r*Config.SIZE);
+        }
+        for(int c=0;c<Config.COLUMNS;c++){			//列            x变         y不变
+            g.drawLine(Config.X0+Config.SIZE*c,Config.Y0, Config.X0+Config.SIZE*c, Config.Y0+(Config.ROWS-1)*Config.SIZE);
+        }
+    }
+
+    public void reDrawChess(Graphics g){
+        Graphics2D g2d=(Graphics2D) g;		//转为Graphics2D   后面要为画笔设置颜色
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        for(int  r=0;r<Config.ROWS;r++){			//外循环控制行
+            for(int c=0;c<Config.COLUMNS;c++){		//内循环控制列
+                if(board[r][c]!=0){			//如果该位置不为空
+                    if(board[r][c]==1){			//该位置是黑子
+                        g2d.setColor(Color.BLACK);
+                        g2d.fillOval(Config.X0+c*Config.SIZE-Config.CHESS_SIZE/2,Config.Y0+r*Config.SIZE-Config.CHESS_SIZE/2 , Config.CHESS_SIZE, Config.CHESS_SIZE);
+                    }else if(board[r][c]==-1){  //该位置是白子
+                        g2d.setColor(Color.WHITE);
+                        g2d.fillOval(Config.X0+c*Config.SIZE-Config.CHESS_SIZE/2,Config.Y0+r*Config.SIZE-Config.CHESS_SIZE/2 , Config.CHESS_SIZE, Config.CHESS_SIZE);
+                    }
+                }
+            }
+        }
     }
 }
