@@ -1,19 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class FiveChess extends JPanel{
+public class ChessTable extends JPanel{
     public int[][] board = new int[Config.ROWS][Config.COLUMNS]; //棋盘
     private ChessListener cl;
 
     public static void main(String[] args) {
-        FiveChess chess=new FiveChess();
-        chess.showUI();
+        ChessTable chessTable=new ChessTable();
+        chessTable.showUI();
     }
 
 
     public void showUI(){
         JFrame frame=new JFrame();  //创建窗体  frame
-        frame.setTitle("五子棋 ");   //设置窗体的标题
+        frame.setTitle("棋类游戏");   //设置窗体的标题
         frame.setSize(750,650);		//设置大小
         frame.setResizable(false);	//大小不可变
         frame.setLocationRelativeTo(null);	//窗体居中
@@ -22,7 +22,6 @@ public class FiveChess extends JPanel{
         eastPanel(frame);			//窗体frame上添加东边面板	 ---功能按钮
 
         frame.setVisible(true);		//设置窗体可见
-
         cl.setExist(board);			//将棋子数组传入到事件监听类中
     }
 
@@ -87,7 +86,7 @@ public class FiveChess extends JPanel{
                     if(board[r][c]==1){			//该位置是黑子
                         g2d.setColor(Color.BLACK);
                         g2d.fillOval(Config.X0+c*Config.SIZE-Config.CHESS_SIZE/2,Config.Y0+r*Config.SIZE-Config.CHESS_SIZE/2 , Config.CHESS_SIZE, Config.CHESS_SIZE);
-                    }else if(board[r][c]==-1){  //该位置是白子
+                    }else if(board[r][c]==2){  //该位置是白子
                         g2d.setColor(Color.WHITE);
                         g2d.fillOval(Config.X0+c*Config.SIZE-Config.CHESS_SIZE/2,Config.Y0+r*Config.SIZE-Config.CHESS_SIZE/2 , Config.CHESS_SIZE, Config.CHESS_SIZE);
                     }
