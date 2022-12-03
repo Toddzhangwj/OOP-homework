@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class WhoWin {
     private int[][]	board;
     public WhoWin(int board[][]){
@@ -8,6 +11,34 @@ public class WhoWin {
         if((rowWin()==1)||(columnWin()==1)||(rightSideWin()==1)||(leftSideWin()==1)){
             return 1;
         }else if((rowWin()==2)||(columnWin()==2)||(rightSideWin()==2)||(leftSideWin()==2)){
+            return 2;
+        }
+        return 0;
+    }
+
+    public int checkGoWin(){
+        int n = board.length;
+        int m = board[0].length;
+        int cnt_black = 0;
+        int cnt_white = 0;
+
+
+        for(int i = 0;i < n;i++){
+            for (int j = 0;j < m;j++) {
+
+                if (board[i][j] == 1) {
+                    cnt_black += 1;
+                }
+                else if(board[i][j] == 2) {
+                    cnt_white += 1;
+                }
+
+            }
+        }
+        if(cnt_black*3 > 184.25){
+            return 1;
+        }
+        if(cnt_white*3 > 176.75){
             return 2;
         }
         return 0;

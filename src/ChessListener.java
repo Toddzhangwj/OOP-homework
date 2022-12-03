@@ -1,3 +1,5 @@
+import control.CheckPiece;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -6,11 +8,15 @@ import java.util.List;
 
 public class ChessListener extends MouseAdapter implements ActionListener{
     private ChessTable chessTable;
+//    private GoChess goChess;
     private int[][] board; //棋盘
     private String mode; //模式
     private int now_color; // 1代表黑 2代表白
     private int step; // 下棋步数
     private ArrayList<Chess> chessList = new ArrayList<>();
+
+    private List<CheckPiece> checkList; // 存储棋盘
+    private CheckPiece cp;
 
     private int x;
     private int y; //点击点
@@ -22,6 +28,13 @@ public class ChessListener extends MouseAdapter implements ActionListener{
 
     public ChessListener(ChessTable chessTable) {
         this.chessTable = chessTable;
+    }
+    public void setCp(CheckPiece cp) {
+        this.cp = cp;
+    }
+
+    public void setCheckList(List<CheckPiece> checkList) {
+        this.checkList = checkList;
     }
 
     @Override
@@ -40,19 +53,40 @@ public class ChessListener extends MouseAdapter implements ActionListener{
                 chessTable.addMouseListener(this);		// 为棋盘添加鼠标监听
             }
             else if(e.getActionCommand().equals("悔棋")){
-                if(chessList.size()>1){		//存储棋子的数组队列长度大于1
-                    Chess chess=chessList.get(chessList.size()-1);   //获取最后一个被存入数组队列的棋子对象
-                    int r=chess.getX();               //分别获取棋子的x与y坐标
-                    int c=chess.getY();
-                    board[r][c]=0;						//设置最后一步所下棋子的位置为空
-                    chessList.remove(chessList.size()-1);			//移除队列中最后一个棋子对象
-                    chessTable.repaint();				//调用面板重绘的方法
-                    if(now_color==1){			//如果悔棋的是黑色方，下一步下棋的还是黑色方
-                        now_color=2;			//如果悔棋的是白色方，下一步下棋的还是白色方
-                    }else{
-                        now_color=1;
+                if(mode.equals("五子棋")){
+                    if(chessList.size()>1){		//存储棋子的数组队列长度大于1
+                        Chess chess=chessList.get(chessList.size()-1);   //获取最后一个被存入数组队列的棋子对象
+                        int r=chess.getX();               //分别获取棋子的x与y坐标
+                        int c=chess.getY();
+                        board[r][c]=0;						//设置最后一步所下棋子的位置为空
+                        chessList.remove(chessList.size()-1);			//移除队列中最后一个棋子对象
+                        chessTable.repaint();				//调用面板重绘的方法
+                        if(now_color==1){			//如果悔棋的是黑色方，下一步下棋的还是黑色方
+                            now_color=2;			//如果悔棋的是白色方，下一步下棋的还是白色方
+                        }else{
+                            now_color=1;
+                        }
                     }
                 }
+                else{
+                    if(checkList.size()>1){		//存储棋子的数组队列长度大于1
+                        checkList.remove(checkList.size()-1);			//移除队列中最后一个棋盘对象
+
+                        CheckPiece tmpCP=checkList.get(checkList.size()-1);   //获取最后一个被存入数组队列的棋盘对象
+                        board = tmpCP.getBoard().getBoard();
+
+                        chessTable.board = board;
+                        chessTable.repaint();				//调用面板重绘的方法
+
+                        if(now_color==1){			//如果悔棋的是黑色方，下一步下棋的还是黑色方
+                            now_color=2;			//如果悔棋的是白色方，下一步下棋的还是白色方
+                        }else{
+                            now_color=1;
+                        }
+                        step--;
+                    }
+                }
+
             }
             else if(e.getActionCommand().equals("认输")){
                 if(now_color == 1){
@@ -73,6 +107,7 @@ public class ChessListener extends MouseAdapter implements ActionListener{
     public void mouseClicked(MouseEvent e){			//鼠标点击事件的处理方法
         x=e.getX();		//获取点击位置的x坐标
         y=e.getY();		//获取点击位置的y坐标
+        System.out.println("游戏名称："+mode);
         if(mode.equals("五子棋")){
             gobangMove(x,y);
         }
@@ -98,6 +133,7 @@ public class ChessListener extends MouseAdapter implements ActionListener{
                             now_color=2;			//下一次点击时  下白色的棋子
                             chessList.add(new Chess(r,c));		//将棋子对象存到数组队列中，保存了棋子的属性  r，c
 
+                            System.out.println("win.checkGobangWin():"+win.checkGobangWin());
                             if(win.checkGobangWin()==1){		//判断黑色棋子是否赢了
                                 JOptionPane.showMessageDialog(chessTable, "黑色棋子获得胜利");
                                 chessTable.removeMouseListener(this);	//获胜之后，不允许再在棋盘上下棋子，所以移除鼠标监听
@@ -127,7 +163,60 @@ public class ChessListener extends MouseAdapter implements ActionListener{
     }
 
     private void goMove(int x,int y){
+        step++;		//步数+1
+        g=chessTable.getGraphics();	//从棋盘面板类中获取画布
+        g2d=(Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        chessTable.repaint();
+        for(int  r=0;r<Config.ROWS;r++){	//行
+            for(int c=0;c<Config.COLUMNS;c++){	//列
+                if(board[r][c]==0){				//判断该位置上是否有棋子
+                    if((Math.abs(x-Config.X0-c*Config.SIZE)<Config.SIZE/3.0)&&(Math.abs(y-Config.Y0-r*Config.SIZE)<Config.SIZE/3.0)){//将棋子放到交叉点上，误差为1/3
+                        board = cp.getBoard().getBoard();
+                        if(!cp.check(r,c,now_color)){
+                            System.out.println("&&&&&");
+                            board[r][c] = 0;
+                            continue;
+                        }
 
+                        chessTable.board = board;
+//                        System.out.println("&&&&"+r+" "+c);
+                        if(now_color==1){			//count 为1放置黑子
+                            g2d.setColor(Color.BLACK);
+                            board[r][c]=1;		//记录下了黑色棋子r与c的位置
+                            g2d.fillOval(Config.X0+c*Config.SIZE-Config.CHESS_SIZE/2,Config.Y0+r*Config.SIZE-Config.CHESS_SIZE/2 , Config.CHESS_SIZE, Config.CHESS_SIZE);
+                            now_color=2;			//下一次点击时  下白色的棋子
+                            CheckPiece new_cp = new CheckPiece(cp);
+                            checkList.add(new_cp);
+
+                            if(win.checkGoWin()==1){		//判断黑色棋子是否赢了
+                                JOptionPane.showMessageDialog(chessTable, "黑色棋子获得胜利");
+                                chessTable.removeMouseListener(this);	//获胜之后，不允许再在棋盘上下棋子，所以移除鼠标监听
+                                return;
+                            }
+
+                            System.out.println("黑棋落子："+r+"行"+c+"列");
+                        }else if(now_color==2){	//放置白子
+                            g2d.setColor(Color.WHITE);
+                            board[r][c]=2;
+                            g2d.fillOval(Config.X0+c*Config.SIZE-Config.CHESS_SIZE/2,Config.Y0+r*Config.SIZE-Config.CHESS_SIZE/2 , Config.CHESS_SIZE, Config.CHESS_SIZE);
+                            now_color=1;		//下一步要下黑色棋子
+
+                            CheckPiece new_cp = new CheckPiece(cp);
+                            checkList.add(new_cp);
+
+                            if(win.checkGoWin()==2){		//判断白色棋子是否赢了
+                                JOptionPane.showMessageDialog(chessTable, "白色棋子获得胜利");
+                                chessTable.removeMouseListener(this);
+                                return;
+                            }
+
+                            System.out.println("白棋落子："+r+"行"+c+"列");
+                        }
+                    }
+                }
+            }
+        }
     }
     private void reset() {
         this.now_color=1;		//默认黑色棋子先下棋
@@ -137,7 +226,16 @@ public class ChessListener extends MouseAdapter implements ActionListener{
                 board[i][j] = 0;
             }
         }
-        chessList.clear();
+
+
+        if(mode.equals("五子棋")){
+            chessList.clear();
+        }
+
+        if(mode.equals("围棋")){
+            checkList.clear();
+        }
+
         chessTable.repaint();   //调用棋盘重绘的方法
     }
 

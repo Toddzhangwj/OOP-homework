@@ -1,5 +1,9 @@
+import control.CheckPiece;
+import model.Board;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class ChessTable extends JPanel{
     public int[][] board = new int[Config.ROWS][Config.COLUMNS]; //棋盘
@@ -23,6 +27,13 @@ public class ChessTable extends JPanel{
 
         frame.setVisible(true);		//设置窗体可见
         cl.setExist(board);			//将棋子数组传入到事件监听类中
+
+        Board board_all = new Board();
+        CheckPiece cp = new CheckPiece(board_all);
+        ArrayList<CheckPiece> checkList = new ArrayList<CheckPiece>();
+        checkList.add(cp);
+        cl.setCheckList(checkList);
+        cl.setCp(cp);
     }
 
     public void centerPanel(JFrame frame){
