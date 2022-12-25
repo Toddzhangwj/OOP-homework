@@ -8,15 +8,7 @@ import model.PieceStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @ProjectName: gochess
- * @Author wuzht
- * @CreateDate: 2018/3/13 上午11:01
- * @UpdateUser: wuzht
- * @UpdateDate: 2018/3/13 上午11:01
- * <p>
- * 这个是逻辑类
- */
+
 
 public class CheckPiece {
     private Board board;
